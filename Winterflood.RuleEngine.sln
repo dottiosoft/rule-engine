@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winterflood.RuleEngine", "Winterflood.RuleEngine\Winterflood.RuleEngine.csproj", "{89297E27-E374-437C-A7E5-427ED0C37336}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winterflood.RuleEngine.UnitTests", "Winterflood.RuleEngine.UnitTests\Winterflood.RuleEngine.UnitTests.csproj", "{6A22E210-AEDD-4DBE-AE76-6331E9C94415}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winterflood.RuleEngine.TestRunner", "Winterflood.RuleEngine.TestRunner\Winterflood.RuleEngine.TestRunner.csproj", "{CC5C3A74-CA0E-4C01-BFD4-3387AE111C4E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89297E27-E374-437C-A7E5-427ED0C37336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89297E27-E374-437C-A7E5-427ED0C37336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89297E27-E374-437C-A7E5-427ED0C37336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89297E27-E374-437C-A7E5-427ED0C37336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A22E210-AEDD-4DBE-AE76-6331E9C94415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A22E210-AEDD-4DBE-AE76-6331E9C94415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A22E210-AEDD-4DBE-AE76-6331E9C94415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A22E210-AEDD-4DBE-AE76-6331E9C94415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC5C3A74-CA0E-4C01-BFD4-3387AE111C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC5C3A74-CA0E-4C01-BFD4-3387AE111C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC5C3A74-CA0E-4C01-BFD4-3387AE111C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC5C3A74-CA0E-4C01-BFD4-3387AE111C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

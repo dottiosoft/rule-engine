@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+		<RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>Winterflood.RuleEngine</PackageId>
+		<Description>Winterflood Rule Engine</Description>
+        <Version>2025.709.6</Version>
+		<Authors>Winterflood</Authors>
+		<Company>Winterflood</Company>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>		
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>		
+		<AssemblyVersion>2025.629.1</AssemblyVersion>		
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+      <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.6" />
+      <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    </ItemGroup>
+</Project>
