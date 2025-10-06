@@ -2,7 +2,9 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use crate::error::{EvalError, Result};
+use crate::ast::Expr;
 use crate::value::Value;
+use crate::eval::{Evaluator, Scope};
 
 pub type Function = Arc<dyn Fn(&[Value]) -> Result<Value> + Send + Sync>;
 

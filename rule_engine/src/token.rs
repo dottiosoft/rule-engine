@@ -37,6 +37,8 @@ pub enum TokenKind {
     Gt,
     Ge,
 
+    Arrow, // =>
+
     Eof,
 }
 
@@ -197,8 +199,10 @@ impl<'a> Lexer<'a> {
                 }
                 '=' => {
                     self.next_char();
-                    if let Some('=') = self.peek_char() { self.next_char(); Token { kind: TokenKind::EqEq, position: pos } } else {
-                        return Err(ParseError::new("unexpected '=' (did you mean '==')?", pos));
+                    match self.peek_char() {
+                        Some('=') => { self.next_char(); Token { kind: TokenKind::EqEq, position: pos } }
+                        Some('>') => { self.next_char(); Token { kind: TokenKind::Arrow, position: pos } }
+                        _ => return Err(ParseError::new("unexpected '=' (did you mean '==' or '=>')?", pos)),
                     }
                 }
                 '<' => {

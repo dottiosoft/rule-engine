@@ -114,6 +114,13 @@ impl Default for OperatorRegistry {
             _ => Err(EvalError::new("'contains' expects string or list on left").into()),
         });
 
+        // word operator: in  e.g.  x in [1,2,3]
+        reg.register_binary("in", 3, Assoc::Left, |a, b| match (a, b) {
+            (v, Value::List(xs)) => Ok(Value::Bool(xs.contains(v))),
+            (Value::String(substr), Value::String(s)) => Ok(Value::Bool(s.contains(substr))),
+            _ => Err(EvalError::new("'in' expects list or string on right").into()),
+        });
+
         reg
     }
 }

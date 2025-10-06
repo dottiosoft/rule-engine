@@ -15,6 +15,7 @@ pub enum Expr {
     Unary { op: UnaryOp, expr: Box<Expr> },
     Binary { left: Box<Expr>, op: String, right: Box<Expr> },
     Call { name: String, args: Vec<Expr> },
+    Lambda { param: String, body: Box<Expr> },
     Member { target: Box<Expr>, member: String },
     Index { target: Box<Expr>, index: Box<Expr> },
     StructLiteral(Vec<(String, Expr)>),

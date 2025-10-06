@@ -103,7 +103,14 @@ impl<'a> Parser<'a> {
                     let expr = self.parse_bp(7)?;
                     return Ok(Expr::Unary { op: UnaryOp::WordNot, expr: Box::new(expr) });
                 }
-                
+
+                // Lambda parameter => body
+                if self.at(&TokenKind::Arrow) {
+                    let _ = self.bump(); // '=>'
+                    let body = self.parse_expression()?;
+                    return Ok(Expr::Lambda { param: name, body: Box::new(body) });
+                }
+
                 if is_capitalized(&name) {
                     if self.at(&TokenKind::LParen) {
                         let args = self.parse_arg_list()?;
