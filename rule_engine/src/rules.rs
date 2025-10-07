@@ -53,6 +53,21 @@ pub struct RuleStep {
     pub action: RuleAction,
 }
 
+pub struct RuleChainBuilder {
+    name: String,
+    steps: Vec<RuleStep>,
+}
+
+impl RuleChainBuilder {
+    pub fn new(name: impl Into<String>) -> Self { Self { name: name.into(), steps: Vec::new() } }
+    pub fn when(mut self, expr: impl Into<String>) -> Self { self.steps.push(RuleStep { name: "when".into(), action: RuleAction::When { expr: expr.into(), on_false: None } }); self }
+    pub fn when_else(mut self, expr: impl Into<String>, on_false_chain: impl Into<String>) -> Self { self.steps.push(RuleStep { name: "when".into(), action: RuleAction::When { expr: expr.into(), on_false: Some(on_false_chain.into()) } }); self }
+    pub fn let_(mut self, key: impl Into<String>, expr: impl Into<String>) -> Self { self.steps.push(RuleStep { name: "let".into(), action: RuleAction::Let { key: key.into(), expr: expr.into() } }); self }
+    pub fn emit(mut self, expr: impl Into<String>) -> Self { self.steps.push(RuleStep { name: "emit".into(), action: RuleAction::Emit { expr: expr.into() } }); self }
+    pub fn call(mut self, chain: impl Into<String>) -> Self { self.steps.push(RuleStep { name: "call".into(), action: RuleAction::Call { chain: chain.into() } }); self }
+    pub fn build(self) -> RuleChain { RuleChain { name: self.name, steps: self.steps } }
+}
+
 #[derive(Clone, Default)]
 pub struct RuleChain {
     pub name: String,
@@ -68,6 +83,8 @@ impl RuleEngine {
     pub fn new(expr: ExpressionEngine) -> Self { Self { expr, chains: BTreeMap::new() } }
 
     pub fn add_chain(&mut self, chain: RuleChain) { self.chains.insert(chain.name.clone(), chain); }
+
+    pub fn with_chain(mut self, chain: RuleChain) -> Self { self.add_chain(chain); self }
 
     pub fn run(&self, chain_name: &str, mut rule_ctx: RuleContext) -> Result<(Option<Value>, AuditLog)> {
         let mut audit = AuditLog::new();

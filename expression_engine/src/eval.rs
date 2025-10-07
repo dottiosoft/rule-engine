@@ -33,6 +33,70 @@ impl<'a> Evaluator<'a> {
             Expr::Literal(v) => Ok(v.clone()),
             Expr::Ident(name) => scope.get(name).cloned().ok_or_else(|| EvalError::new(format!("unknown identifier '{}'" , name)).into()),
             Expr::Lambda { .. } => Err(EvalError::new("lambdas must be passed to higher-order functions").into()),
+            Expr::MethodCall { target, name, args } => {
+                let tval = self.eval(target, scope)?;
+                match (tval, name.as_str(), args.as_slice()) {
+                    (Value::List(v), "where", [Expr::Lambda { param, body }]) | (Value::List(v), "filter", [Expr::Lambda { param, body }]) => {
+                        let mut out = Vec::new();
+                        for item in v.into_iter() {
+                            let mut inner = scope.clone();
+                            inner.vars.insert(param.clone(), item.clone());
+                            let cond = self.eval(body, &inner)?;
+                            if let Value::Bool(true) = cond { out.push(item); }
+                        }
+                        Ok(Value::List(out))
+                    }
+                    (Value::List(v), "select", [Expr::Lambda { param, body }]) | (Value::List(v), "map", [Expr::Lambda { param, body }]) => {
+                        let mut out = Vec::with_capacity(v.len());
+                        for item in v.into_iter() {
+                            let mut inner = scope.clone();
+                            inner.vars.insert(param.clone(), item);
+                            out.push(self.eval(body, &inner)?);
+                        }
+                        Ok(Value::List(out))
+                    }
+                    (Value::List(v), "sum", []) => {
+                        let mut total: f64 = 0.0; for x in v.iter() { match x { Value::Int(n) => total += *n as f64, Value::Float(n) => total += *n, _ => return Err(EvalError::new("sum expects numeric list").into()) } } Ok(Value::Float(total))
+                    }
+                    (Value::List(v), "sum", [Expr::Lambda { param, body }]) | (Value::List(v), "sum_by", [Expr::Lambda { param, body }]) => {
+                        let mut total: f64 = 0.0; for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; match x { Value::Int(n) => total += n as f64, Value::Float(n) => total += n, _ => return Err(EvalError::new("sum lambda must return number").into()) } } Ok(Value::Float(total))
+                    }
+                    (Value::List(v), "avg", []) => {
+                        if v.is_empty() { return Ok(Value::Float(0.0)); }
+                        let mut total: f64 = 0.0; let mut count = 0usize; for x in v.iter() { match x { Value::Int(n) => { total += *n as f64; count += 1; }, Value::Float(n) => { total += *n; count += 1; }, _ => return Err(EvalError::new("avg expects numeric list").into()) } } Ok(Value::Float(total / count as f64))
+                    }
+                    (Value::List(v), "avg", [Expr::Lambda { param, body }]) | (Value::List(v), "avg_by", [Expr::Lambda { param, body }]) => {
+                        if v.is_empty() { return Ok(Value::Float(0.0)); }
+                        let mut total: f64 = 0.0; let mut count = 0usize; for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; match x { Value::Int(n) => { total += n as f64; count += 1; }, Value::Float(n) => { total += n; count += 1; }, _ => return Err(EvalError::new("avg lambda must return number").into()) } } Ok(Value::Float(total / count as f64))
+                    }
+                    (Value::List(v), "min", []) => {
+                        let mut best: Option<f64> = None; for x in v.iter() { let n = match x { Value::Int(n) => *n as f64, Value::Float(n) => *n, _ => return Err(EvalError::new("min expects numeric list").into()) }; best = Some(match best { Some(b) => b.min(n), None => n }); } Ok(Value::Float(best.unwrap_or(0.0)))
+                    }
+                    (Value::List(v), "min", [Expr::Lambda { param, body }]) | (Value::List(v), "min_by", [Expr::Lambda { param, body }]) => {
+                        let mut best: Option<f64> = None; for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; let n = match x { Value::Int(n) => n as f64, Value::Float(n) => n, _ => return Err(EvalError::new("min lambda must return number").into()) }; best = Some(match best { Some(b) => b.min(n), None => n }); } Ok(Value::Float(best.unwrap_or(0.0)))
+                    }
+                    (Value::List(v), "max", []) => {
+                        let mut best: Option<f64> = None; for x in v.iter() { let n = match x { Value::Int(n) => *n as f64, Value::Float(n) => *n, _ => return Err(EvalError::new("max expects numeric list").into()) }; best = Some(match best { Some(b) => b.max(n), None => n }); } Ok(Value::Float(best.unwrap_or(0.0)))
+                    }
+                    (Value::List(v), "max", [Expr::Lambda { param, body }]) | (Value::List(v), "max_by", [Expr::Lambda { param, body }]) => {
+                        let mut best: Option<f64> = None; for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; let n = match x { Value::Int(n) => n as f64, Value::Float(n) => n, _ => return Err(EvalError::new("max lambda must return number").into()) }; best = Some(match best { Some(b) => b.max(n), None => n }); } Ok(Value::Float(best.unwrap_or(0.0)))
+                    }
+                    (Value::List(v), "any", [Expr::Lambda { param, body }]) => {
+                        for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; match x { Value::Bool(true) => return Ok(Value::Bool(true)), Value::Bool(false) => {}, _ => return Err(EvalError::new("any lambda must return bool").into()) } } Ok(Value::Bool(false))
+                    }
+                    (Value::List(v), "all", [Expr::Lambda { param, body }]) => {
+                        for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; match x { Value::Bool(true) => {}, Value::Bool(false) => return Ok(Value::Bool(false)), _ => return Err(EvalError::new("all lambda must return bool").into()) } } Ok(Value::Bool(true))
+                    }
+                    (Value::List(v), "count", []) => Ok(Value::Int(v.len() as i64)),
+                    (Value::List(v), "count", [Expr::Lambda { param, body }]) => {
+                        let mut c: i64 = 0; for item in v.into_iter() { let mut inner = scope.clone(); inner.vars.insert(param.clone(), item); let x = self.eval(body, &inner)?; match x { Value::Bool(true) => c += 1, Value::Bool(false) => {}, _ => return Err(EvalError::new("count lambda must return bool").into()) } } Ok(Value::Int(c))
+                    }
+                    (Value::String(s), "contains", [arg]) => {
+                        let needle = self.eval(arg, scope)?; if let Value::String(t) = needle { Ok(Value::Bool(s.contains(&t))) } else { Err(EvalError::new("contains expects string argument").into()) }
+                    }
+                    (val, m, _) => Err(EvalError::new(format!("unknown method '{}' for {}", m, val.type_name())).into()),
+                }
+            }
             Expr::Unary { op, expr } => {
                 let v = self.eval(expr, scope)?;
                 let f = match op {

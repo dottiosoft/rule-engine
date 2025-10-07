@@ -49,8 +49,15 @@ impl<'a> Parser<'a> {
                     let _ = self.bump();
                     let t = self.bump();
                     let name = match &t.kind { TokenKind::Ident(s) => s.clone(), _ => return Err(ParseError::new("expected identifier after '.'", t.position).into()) };
-                    lhs = Expr::Member { target: Box::new(lhs), member: name };
-                    continue;
+                    // method call or member access
+                    if self.at(&TokenKind::LParen) {
+                        let args = self.parse_arg_list()?;
+                        lhs = Expr::MethodCall { target: Box::new(lhs), name, args };
+                        continue;
+                    } else {
+                        lhs = Expr::Member { target: Box::new(lhs), member: name };
+                        continue;
+                    }
                 }
                 TokenKind::LBracket => {
                     let _ = self.bump();
