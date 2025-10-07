@@ -1,4 +1,4 @@
-use rule_engine::{Context, Engine, Value};
+use expression_engine::{Context, Engine, Value};
 use std::collections::BTreeMap;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

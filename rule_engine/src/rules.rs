@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use crate::{Engine as ExpressionEngine, ExpressionContext, Value, Result};
+use expression_engine::{Engine as ExpressionEngine, Context as ExpressionContext, Value, Result};
 
 #[derive(Clone, Debug)]
 pub struct RuleContext {

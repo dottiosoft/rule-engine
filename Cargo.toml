@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "expression_engine",
+    "rule_engine",
+]

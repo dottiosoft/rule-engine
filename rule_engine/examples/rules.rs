@@ -1,9 +1,10 @@
-use rule_engine::{ExpressionEngine, RuleAction, RuleChain, RuleEngine, RuleStep, RuleContext, Value};
+use expression_engine as expr;
+use rule_engine::{RuleAction, RuleChain, RuleEngine, RuleStep, RuleContext, Value};
 use std::collections::BTreeMap;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Expression engine supports complex predicates with and/or/not and HOFs
-    let expr = ExpressionEngine::new();
+    let expr = expr::Engine::new();
 
     // Build a simple rule chain
     let mut chain = RuleChain { name: "pricing".into(), steps: vec![

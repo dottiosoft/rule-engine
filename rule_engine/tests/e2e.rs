@@ -1,4 +1,4 @@
-use rule_engine::{Context, Engine, Value};
+use expression_engine::{Context, Engine, Value};
 
 #[test]
 fn arithmetic_and_logic() {
