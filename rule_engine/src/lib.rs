@@ -17,11 +17,14 @@ mod functions;
 mod operators;
 mod eval;
 mod engine;
+mod rules;
 
 pub use crate::ast::{Expr, UnaryOp};
 pub use crate::engine::{Context, Engine};
+pub use crate::engine::{Context as ExpressionContext, Engine as ExpressionEngine};
 pub use crate::error::{EngineError, EvalError, ParseError, Result};
 pub use crate::functions::{Function, FunctionRegistry};
 pub use crate::operators::{Assoc, BinaryOpSpec, OperatorRegistry};
 pub use crate::value::Value;
+pub use crate::rules::*;
 
